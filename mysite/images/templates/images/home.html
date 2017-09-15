@@ -2,11 +2,11 @@
 {% extends 'images/header.html' %}
 
 {% block content %}
-<form>
-  
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
   <div class="form-group">
-    <label for="exampleInputFile">File input</label>
-    <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp">
+    <label for="image">File input</label>
+    <input type="file" class="form-control-file" id="image" name="image" aria-describedby="fileHelp">
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>

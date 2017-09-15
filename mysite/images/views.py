@@ -4,17 +4,20 @@ import wikipedia as wiki
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
+from .forms import UploadFileForm
+
 def home(request):
 	if request.method == 'POST':
-		form = UploadFileForm(request.FILES)
+		form = UploadFileForm(request.POST, request.FILES)
+		print(form.is_valid())
 		if form.is_valid():
-			handle_uploaded_file(request.FILES['file'])
+			handle_uploaded_file(request.FILES['image'])
 			return render(request, 'images/classify.html')
-
-	return render(request, 'images/home.html', {'form':form})
+	return render(request, 'images/home.html')
 
 def handle_uploaded_file(f):
-	with open('./test.jpg','wb+') as destination:
+	
+	with open('./media/test.jpg','wb+') as destination:
 		for chunk in f.chunks():
 			destination.write(chunk)
 
@@ -28,8 +31,7 @@ The main roles of the tf.gfile module are:
 Regular python file API can be used but use gfile if possibility of using unconventional file system such as google cloud
 '''
 def classify_image(request, image):
-	'''
-	# load image
+		# load image
 	image_data = image
 
   	# load labels in googley fashion
@@ -49,6 +51,5 @@ def classify_image(request, image):
 	  		human_string = labels[node_id]
 	  		score = predictions[node_id]
 	  		print('%s (score = %.5f)' % (human_string, score))
-	'''
 	return render(request,'mysite/classify_image.html')
-# Create your views here.
+
