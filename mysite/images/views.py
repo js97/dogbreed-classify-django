@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 import tensorflow as tf
 import wikipedia as wiki
 from django.conf import settings
@@ -12,12 +12,11 @@ def home(request):
 		print(form.is_valid())
 		if form.is_valid():
 			handle_uploaded_file(request.FILES['image'])
-			return render(request, 'images/classify.html')
+			return redirect('/classify')
 	return render(request, 'images/home.html')
 
-def handle_uploaded_file(f):
-	
-	with open('./media/test.jpg','wb+') as destination:
+def handle_uploaded_file(f):	
+	with open('./images/static/images/img/test.jpg','wb+') as destination:
 		for chunk in f.chunks():
 			destination.write(chunk)
 
@@ -30,26 +29,37 @@ The main roles of the tf.gfile module are:
 
 Regular python file API can be used but use gfile if possibility of using unconventional file system such as google cloud
 '''
-def classify_image(request, image):
-		# load image
-	image_data = image
+def classify_image(request):
+	context = {}
+	# load image
+	image_file = './images/static/images/img/test.jpg'
+	image = tf.gfile.FastGFile(image_file,'rb').read()
 
   	# load labels in googley fashion
-	labels = [line.rstrip() for line in tf.gfile.GFile('mysite/retrained_labels.txt')]
+	labels = [line.rstrip() for line in tf.gfile.GFile('images/retrained_labels.txt')]
+  	
   	# load graph
-	with tf.gfile.FastGFile('/mysite/retrained_graph.pb', 'rb') as f:
+	with tf.gfile.FastGFile('images/retrained_graph.pb', 'rb') as f:
 		graph_def = tf.GraphDef()
 		graph_def.ParseFromString(f.read())
 		tf.import_graph_def(graph_def, name='')
-
+	
+	output_layer_name = 'final_result:0'
+	input_layer_name = 'DecodeJpeg/contents:0'
+	
 	with tf.Session() as sess:
 		softmax_tensor = sess.graph.get_tensor_by_name(output_layer_name)
-		predictions, = sess.run(softmax_tensor, {input_layer_name: image_data})
-    	
+		predictions, = sess.run(softmax_tensor, {input_layer_name: image})
+		num_top_predictions = 6
 		top_k = predictions.argsort()[-num_top_predictions:][::-1]
 		for node_id in top_k:
 	  		human_string = labels[node_id]
 	  		score = predictions[node_id]
+
 	  		print('%s (score = %.5f)' % (human_string, score))
-	return render(request,'mysite/classify_image.html')
+	print(labels[top_k[0]])
+	context_prediction = labels[top_k[0]]
+	context_prediction = context_prediction[10:]
+	context['prediction'] = context_prediction
+	return render(request,'images/classify_image.html',context)
 

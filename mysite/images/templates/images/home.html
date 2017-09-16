@@ -2,7 +2,34 @@
 {% extends 'images/header.html' %}
 
 {% block content %}
-<form method="post" enctype="multipart/form-data">
+
+
+<body> 
+ <center> 
+    <div class="jumbotron">
+      <div class="container">
+        <h1 class="display-3">Find the dog breed of a dog.</h1>
+        <p>Uses Stanford's Dogs Dataset to perform transfer learning on the Inception V3 Neural Net to classify input images as one of 120 possible breeds. Then pulls from wikipedia a summary for that particular dog breed. </p>
+      </div>
+</div>
+</center>      
+ 
+<center>
+<div class="row">
+ 
+  <div class = "col-xs-12">
+  <h3>Finds the dog breed of the dog you input</h3>
+  <h4>and gives you some information about that dog breed.</h4>
+  </div>
+  
+</div>
+</center>
+
+<div class="row">
+ 
+  <div class="col-xs-12">
+  <center>
+  <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   <div class="form-group">
     <label for="image">File input</label>
@@ -10,5 +37,10 @@
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+</center>
+</div>
+</div>
+
+</body>
 
 {% endblock %}
