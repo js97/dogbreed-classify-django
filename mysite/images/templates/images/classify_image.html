@@ -3,11 +3,20 @@
 
 {% load staticfiles %}
 {% block content %}
-
-<img 
+<body>
+<div class="row">
+  <center>
+  <img 
 src="{% static 'images/img/test.jpg' %}"  
 	 alt="DOGGGO">
+</center>
+</div>
 
-{{prediction}}
-
+<div class="row">
+	<center>
+<h4>{{prediction}}:</h4>  
+<h5>{{summary}}</h5>
+</center>
+</div>
+</body>
 {% endblock %}

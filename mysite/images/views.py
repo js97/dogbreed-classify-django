@@ -50,7 +50,7 @@ def classify_image(request):
 	with tf.Session() as sess:
 		softmax_tensor = sess.graph.get_tensor_by_name(output_layer_name)
 		predictions, = sess.run(softmax_tensor, {input_layer_name: image})
-		num_top_predictions = 6
+		num_top_predictions = 120
 		top_k = predictions.argsort()[-num_top_predictions:][::-1]
 		for node_id in top_k:
 	  		human_string = labels[node_id]
@@ -60,6 +60,8 @@ def classify_image(request):
 	print(labels[top_k[0]])
 	context_prediction = labels[top_k[0]]
 	context_prediction = context_prediction[10:]
-	context['prediction'] = context_prediction
+	context['prediction'] = context_prediction.upper()
+	context['summary'] = wiki.summary(context_prediction, sentences=4)
+	print(context['summary'])
 	return render(request,'images/classify_image.html',context)
 
